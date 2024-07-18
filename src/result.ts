@@ -22,6 +22,8 @@ export const isFailure = <T, E>(result: Result<T, E>): result is Failure<E> =>
 export const success = <T>(value: T): Result<T, never> => new Success(value);
 export const failure = <E>(error: E): Result<never, E> => new Failure(error);
 
+export const of = <T>(value: T): Result<T, never> => success(value);
+
 export const map =
   <T, R, E>(fn: (value: T) => R | Promise<R>) =>
   async (result: Result<T, E>): Promise<Result<R, E>> => {
@@ -32,26 +34,34 @@ export const map =
   };
 
 export const chain =
-  <T, R, E>(fn: (value: T) => Promise<Result<R, E>>) =>
-  async (result: Result<T, E>): Promise<Result<R, E>> => {
+  <T, U, E, F>(fn: (value: T) => Result<U, F> | Promise<Result<U, F>>) =>
+  async (result: Result<T, E>): Promise<Result<U, E | F>> => {
     if (isSuccess(result)) {
-      return fn(result.value);
+      return await fn(result.value);
     }
-    return result as Result<R, E>;
+    return result as Result<U, E | F>;
   };
 
 export const bimap =
-  <T, R, E, F>(fn: (value: T) => R, fnError: (error: E) => F) =>
-  (result: Result<T, E>): Result<R, F> => {
-    return isSuccess(result)
-      ? success(fn(result.value))
-      : failure(fnError(result.error));
+  <T, R, E, F>(
+    fn: (value: T) => R | Promise<R>,
+    fnError: (error: E) => F | Promise<F>
+  ) =>
+  async (result: Result<T, E>): Promise<Result<R, F>> => {
+    if (isSuccess(result)) {
+      return success(await fn(result.value));
+    } else {
+      return failure(await fnError(result.error));
+    }
   };
 
 export const mapError =
-  <T, E, F>(fnError: (error: E) => F) =>
-  (result: Result<T, E>): Result<T, F> => {
-    return isFailure(result) ? failure(fnError(result.error)) : result;
+  <T, E, F>(fnError: (error: E) => F | Promise<F>) =>
+  async (result: Result<T, E>): Promise<Result<T, F>> => {
+    if (isFailure(result)) {
+      return failure(await fnError(result.error));
+    }
+    return result;
   };
 
 export const match =
@@ -73,5 +83,10 @@ export const match =
 export const fromPromise = async <T, E extends Error = Error>(
   promise: Promise<T>
 ): Promise<Result<T, E>> => {
-  return promise.then(success).catch(failure);
+  try {
+    const value = await promise;
+    return success(value);
+  } catch (error) {
+    return failure(error as E);
+  }
 };
