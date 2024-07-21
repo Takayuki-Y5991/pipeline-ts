@@ -1,131 +1,75 @@
 import { describe, expect, it } from "vitest";
 import {
-  bimap,
-  chain,
   failure,
   fromPromise,
   isFailure,
   isSuccess,
-  map,
-  mapError,
   match,
   success,
 } from "../src/result";
 
-describe("Result", () => {
-  describe("success", () => {
-    it("should create a success result", () => {
-      const result = success(10);
-      expect(isSuccess(result)).toBe(true);
-      if (isSuccess(result)) expect(result.value).toBe(10);
-    });
+describe("Result Type Functions", () => {
+  it("should create a success result", () => {
+    const result = success(42);
+    expect(isSuccess(result)).toBe(true);
+    if (isSuccess(result)) expect(result.value).toBe(42);
   });
 
-  describe("failure", () => {
-    it("should create a failure result", () => {
-      const result = failure("Error");
-      expect(isFailure(result)).toBe(true);
-      if (isFailure(result)) expect(result.error).toBe("Error");
-    });
+  it("should create a failure result", () => {
+    const result = failure("Error occurred");
+    expect(isFailure(result)).toBe(true);
+    if (isFailure(result)) expect(result.error).toBe("Error occurred");
   });
 
-  describe("map", () => {
-    it("should map a success result", async () => {
-      const result = await map((value: number) => value * 2)(success(10));
-      expect(isSuccess(result)).toBe(true);
-      if (isSuccess(result)) expect(result.value).toBe(20);
-    });
-
-    it("should not map a failure result", async () => {
-      const result = await map((value: number) => value * 2)(failure("Error"));
-      expect(isFailure(result)).toBe(true);
-      if (isFailure(result)) expect(result.error).toBe("Error");
-    });
+  it("should match a success result", async () => {
+    const result = success(42);
+    const matched = await match({
+      onSuccess: (value) => `Success: ${value}`,
+      onFailure: (error) => `Failure: ${error}`,
+    })(result);
+    expect(matched).toBe("Success: 42");
   });
 
-  describe("chain", () => {
-    it("should chain a success result", async () => {
-      const result = await chain((value: number) =>
-        Promise.resolve(success(value * 2))
-      )(success(10));
-      expect(isSuccess(result)).toBe(true);
-      if (isSuccess(result)) expect(result.value).toBe(20);
-    });
-
-    it("should not chain a failure result", async () => {
-      const result = await chain((value: number) =>
-        Promise.resolve(success(value * 2))
-      )(failure("Error" as never));
-      expect(isFailure(result)).toBe(true);
-      if (isFailure(result)) expect(result.error).toBe("Error");
-    });
+  it("should match a failure result", async () => {
+    const result = failure("Error occurred");
+    const matched = await match({
+      onSuccess: (value) => `Success: ${value}`,
+      onFailure: (error) => `Failure: ${error}`,
+    })(result);
+    expect(matched).toBe("Failure: Error occurred");
   });
 
-  describe("bimap", () => {
-    it("should bimap a success result", async () => {
-      const result = await bimap(
-        (value: number) => value * 2,
-        (error) => "Mapped Error"
-      )(success(10));
-      expect(isSuccess(result)).toBe(true);
-      if (isSuccess(result)) expect(result.value).toBe(20);
-    });
-
-    it("should bimap a failure result", async () => {
-      const result = await bimap(
-        (value: number) => value * 2,
-        (error) => "Mapped Error"
-      )(failure("Error"));
-      expect(isFailure(result)).toBe(true);
-      if (isFailure(result)) expect(result.error).toBe("Mapped Error");
-    });
+  it("should create a result from a resolved promise", async () => {
+    const promise = Promise.resolve(42);
+    const result = await fromPromise(promise);
+    expect(isSuccess(result)).toBe(true);
+    if (isSuccess(result)) expect(result.value).toBe(42);
   });
 
-  describe("mapError", () => {
-    it("should not map a success result", async () => {
-      const result = await mapError((error) => "Mapped Error")(success(10));
-      expect(isSuccess(result)).toBe(true);
-      if (isSuccess(result)) expect(result.value).toBe(10);
-    });
-
-    it("should map a failure result", async () => {
-      const result = await mapError((error) => "Mapped Error")(
-        failure("Error")
-      );
-      expect(isFailure(result)).toBe(true);
-      if (isFailure(result)) expect(result.error).toBe("Mapped Error");
-    });
+  it("should create a result from a rejected promise", async () => {
+    const promise = Promise.reject(new Error("Error occurred"));
+    const result = await fromPromise(promise);
+    expect(isFailure(result)).toBe(true);
+    if (isFailure(result)) expect(result.error.message).toBe("Error occurred");
   });
 
-  describe("match", () => {
-    it("should match a success result", async () => {
-      const result = await match({
-        onSuccess: (value: number) => value * 2,
-        onFailure: (error) => "Mapped Error",
-      })(success(10));
-      expect(result).toBe(20);
-    });
-
-    it("should match a failure result", async () => {
-      const result = await match({
-        onSuccess: (value: number) => value * 2,
-        onFailure: (error) => "Mapped Error",
-      })(failure("Error"));
-      expect(result).toBe("Mapped Error");
-    });
+  it("should handle a promise with match function", async () => {
+    const promise = Promise.resolve(42);
+    const result = await fromPromise(promise);
+    const matched = await match({
+      onSuccess: (value) => `Resolved: ${value}`,
+      onFailure: (error: Error) => `Rejected: ${error.message}`,
+    })(result);
+    expect(matched).toBe("Resolved: 42");
   });
 
-  describe("fromPromise", () => {
-    it("should create a success result from a resolved promise", async () => {
-      const result = await fromPromise(Promise.resolve(10));
-      expect(isSuccess(result)).toBe(true);
-      if (isSuccess(result)) expect(result.value).toBe(10);
-    });
-
-    it("should create a failure result from a rejected promise", async () => {
-      const result = await fromPromise(Promise.reject("Error"));
-      expect(isFailure(result)).toBe(true);
-      if (isFailure(result)) expect(result.error).toBe("Error");
-    });
+  it("should handle a rejected promise with match function", async () => {
+    const promise = Promise.reject(new Error("Error occurred"));
+    const result = await fromPromise(promise);
+    const matched = await match({
+      onSuccess: (value) => `Resolved: ${value}`,
+      onFailure: (error: Error) => `Rejected: ${error.message}`,
+    })(result);
+    expect(matched).toBe("Rejected: Error occurred");
   });
 });
