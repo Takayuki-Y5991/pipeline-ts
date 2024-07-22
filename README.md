@@ -12,7 +12,7 @@ PipeLineTS is a minimal dependency-free library for composing pipelines in TypeS
 
 You can install this package using pnpm:
 ```sh
-pnpm add my-pipeline-ts
+pnpm add ts-dependency-free-pipeline
 ```
 
 ## Usage
