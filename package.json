@@ -1,21 +1,33 @@
 {
   "name": "ts-pipeline",
-  "version": "1.0.0",
-  "description": "A minimal library that provides a functional pipeline mechanism in typescript",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "version": "0.1.0",
+  "description": "A minimal dependency-free library for composing pipelines in TypeScript.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsc",
-    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run build",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "author": "konkon",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/username/my-pipeline-ts.git"
+  },
+  "keywords": [
+    "pipeline",
+    "typescript",
+    "functional-programming"
+  ],
+  "bugs": {
+    "url": "https://github.com/username/my-pipeline-ts/issues"
+  },
   "devDependencies": {
     "@types/node": "^20.14.11",
     "ts-node": "^10.9.2",

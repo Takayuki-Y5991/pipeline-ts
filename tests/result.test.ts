@@ -1,63 +1,75 @@
 import { describe, expect, it } from "vitest";
 import {
-  chain,
   failure,
+  fromPromise,
   isFailure,
   isSuccess,
-  map,
   match,
   success,
-} from "../src/result";
+} from "../lib/result";
 
-describe("Result", () => {
-  it("should create a Success result", () => {
+describe("Result Type Functions", () => {
+  it("should create a success result", () => {
     const result = success(42);
-    expect(result.isSuccess).toBe(true);
-    expect(result.isFailure).toBe(false);
+    expect(isSuccess(result)).toBe(true);
     if (isSuccess(result)) expect(result.value).toBe(42);
   });
 
-  it("should create a Failure result", () => {
-    const result = failure("error");
-    expect(result.isSuccess).toBe(false);
-    expect(result.isFailure).toBe(true);
-    if (isFailure(result)) expect(result.error).toBe("error");
+  it("should create a failure result", () => {
+    const result = failure("Error occurred");
+    expect(isFailure(result)).toBe(true);
+    if (isFailure(result)) expect(result.error).toBe("Error occurred");
   });
 
-  it("should map over a Success result", async () => {
-    const result = await map((x: number) => x + 1)(success(42));
-    expect(result.isSuccess).toBe(true);
-    if (isSuccess(result)) expect(result.value).toBe(43);
+  it("should match a success result", async () => {
+    const result = success(42);
+    const matched = await match({
+      onSuccess: (value) => `Success: ${value}`,
+      onFailure: (error) => `Failure: ${error}`,
+    })(result);
+    expect(matched).toBe("Success: 42");
   });
 
-  it("should not map over a Failure result", async () => {
-    const result = await map((x: number) => x + 1)(failure("error"));
-    expect(result.isFailure).toBe(true);
-    if (isFailure(result)) expect(result.error).toBe("error");
+  it("should match a failure result", async () => {
+    const result = failure("Error occurred");
+    const matched = await match({
+      onSuccess: (value) => `Success: ${value}`,
+      onFailure: (error) => `Failure: ${error}`,
+    })(result);
+    expect(matched).toBe("Failure: Error occurred");
   });
 
-  it("should chain over a Success result", async () => {
-    const result = await chain((x: number) => Promise.resolve(success(x + 1)))(
-      success(42)
-    );
-    if (isSuccess(result)) {
-      expect(result.value).toBe(43);
-    }
+  it("should create a result from a resolved promise", async () => {
+    const promise = Promise.resolve(42);
+    const result = await fromPromise(promise);
+    expect(isSuccess(result)).toBe(true);
+    if (isSuccess(result)) expect(result.value).toBe(42);
   });
 
-  it("should match on a Success result", async () => {
-    const result = await match({
-      onSuccess: (x: number) => x + 1,
-      onFailure: (err: string) => err,
-    })(success(42));
-    expect(result).toBe(43);
+  it("should create a result from a rejected promise", async () => {
+    const promise = Promise.reject(new Error("Error occurred"));
+    const result = await fromPromise(promise);
+    expect(isFailure(result)).toBe(true);
+    if (isFailure(result)) expect(result.error.message).toBe("Error occurred");
   });
 
-  it("should match on a Failure result", async () => {
-    const result = await match({
-      onSuccess: (x: number) => x + 1,
-      onFailure: (err: string) => err,
-    })(failure("error"));
-    expect(result).toBe("error");
+  it("should handle a promise with match function", async () => {
+    const promise = Promise.resolve(42);
+    const result = await fromPromise(promise);
+    const matched = await match({
+      onSuccess: (value) => `Resolved: ${value}`,
+      onFailure: (error: Error) => `Rejected: ${error.message}`,
+    })(result);
+    expect(matched).toBe("Resolved: 42");
+  });
+
+  it("should handle a rejected promise with match function", async () => {
+    const promise = Promise.reject(new Error("Error occurred"));
+    const result = await fromPromise(promise);
+    const matched = await match({
+      onSuccess: (value) => `Resolved: ${value}`,
+      onFailure: (error: Error) => `Rejected: ${error.message}`,
+    })(result);
+    expect(matched).toBe("Rejected: Error occurred");
   });
 });
