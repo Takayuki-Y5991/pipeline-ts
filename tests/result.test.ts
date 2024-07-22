@@ -6,7 +6,7 @@ import {
   isSuccess,
   match,
   success,
-} from "../src/result";
+} from "../lib/result";
 
 describe("Result Type Functions", () => {
   it("should create a success result", () => {

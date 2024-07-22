@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { pipe } from "../src/pipe";
-import { failure, match, Result, success } from "../src/result";
+import { pipe } from "../lib/pipe";
+import { failure, match, Result, success } from "../lib/result";
 
 // Define interfaces
 interface Person {
