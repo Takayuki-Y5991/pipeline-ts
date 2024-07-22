@@ -2,7 +2,6 @@
 
 PipeLineTS is a minimal dependency-free library for composing pipelines in TypeScript. It allows you to compose both synchronous and asynchronous functions, ensuring type safety throughout the pipeline.
 
-=
 ## Features
 
 - Type-safe function composition
