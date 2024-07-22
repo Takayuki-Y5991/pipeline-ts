@@ -14,7 +14,9 @@
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "npm:push": "pnpm publish",
-    "version:up": "pnpm version patch"
+    "version:up": "pnpm version patch",
+    "push:package": "pnpm publish",
+    "deploy": "pnpm run version:up && pnpm run build && pnpm run push:package"
   },
   "author": "konkon",
   "license": "MIT",
