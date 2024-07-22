@@ -1,5 +1,5 @@
 {
-  "name": "ts-pipeline",
+  "name": "ts-dependency-free-pipeline",
   "version": "0.1.0",
   "description": "A minimal dependency-free library for composing pipelines in TypeScript.",
   "main": "dist/index.js",
