@@ -1,6 +1,6 @@
 {
   "name": "ts-dependency-free-pipeline",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A minimal dependency-free library for composing pipelines in TypeScript.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,7 +22,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/username/my-pipeline-ts.git"
+    "url": "git+https://github.com/Takayuki-Y5991/pipeline-ts"
   },
   "keywords": [
     "pipeline",
@@ -30,7 +30,7 @@
     "functional-programming"
   ],
   "bugs": {
-    "url": "https://github.com/username/my-pipeline-ts/issues"
+    "url": "https://github.com/Takayuki-Y5991/pipeline-ts/issues"
   },
   "devDependencies": {
     "@types/node": "^20.14.11",
