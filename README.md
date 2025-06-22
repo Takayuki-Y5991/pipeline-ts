@@ -1,6 +1,6 @@
 # PipelineTS
 
-[![npm version](https://badge.fury.io/js/ts-pipeline.svg)](https://badge.fury.io/js/ts-pipeline)
+[![npm version](https://badge.fury.io/js/@konkon5991%2Fpipeline-ts.svg)](https://badge.fury.io/js/@konkon5991%2Fpipeline-ts)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
 [![Test Coverage](https://img.shields.io/badge/coverage-97.45%25-brightgreen)](https://github.com/Takayuki-Y5991/pipeline-ts)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -20,17 +20,17 @@ A lightweight TypeScript library for Railway Oriented Programming (ROP). Pipelin
 ## Installation
 
 ```bash
-npm install ts-pipeline
+npm install @konkon5991/pipeline-ts
 # or
-yarn add ts-pipeline
+yarn add @konkon5991/pipeline-ts
 # or
-pnpm add ts-pipeline
+pnpm add @konkon5991/pipeline-ts
 ```
 
 ## Quick Start
 
 ```typescript
-import { pipe, success, failure, map, fold } from 'ts-pipeline';
+import { pipe, success, failure, map, fold } from '@konkon5991/pipeline-ts';
 
 // Define your functions
 const parseNumber = (input: string) =>
@@ -60,7 +60,7 @@ console.log(output); // "Success: 42"
 The `Result<T, E>` type represents either a success (`Success<T>`) or a failure (`Failure<E>`):
 
 ```typescript
-import { Result, success, failure, isSuccess, isFailure } from 'ts-pipeline';
+import { Result, success, failure, isSuccess, isFailure } from '@konkon5991/pipeline-ts';
 
 const successResult: Result<number, string> = success(42);
 const failureResult: Result<number, string> = failure("Error occurred");
@@ -81,7 +81,7 @@ if (isFailure(failureResult)) {
 Transform success values while preserving failures:
 
 ```typescript
-import { map, mapAsync, success, failure } from 'ts-pipeline';
+import { map, mapAsync, success, failure } from '@konkon5991/pipeline-ts';
 
 const result = success(5);
 const doubled = map((x: number) => x * 2)(result);
@@ -96,7 +96,7 @@ const asyncDoubled = await mapAsync(async (x: number) => x * 2)(result);
 Chain operations that return Results:
 
 ```typescript
-import { flatMap, success, failure } from 'ts-pipeline';
+import { flatMap, success, failure } from '@konkon5991/pipeline-ts';
 
 const divide = (x: number, y: number) =>
   y === 0 ? failure("Division by zero") : success(x / y);
@@ -111,7 +111,7 @@ const divided = flatMap((x: number) => divide(x, 2))(result);
 Handle and transform errors:
 
 ```typescript
-import { mapError, recover, orElse } from 'ts-pipeline';
+import { mapError, recover, orElse } from '@konkon5991/pipeline-ts';
 
 const result = failure("Network error");
 
@@ -132,7 +132,7 @@ const alternative = orElse(() => success(0))(result);
 For functions that may be asynchronous:
 
 ```typescript
-import { pipe, success, failure } from 'ts-pipeline';
+import { pipe, success, failure } from '@konkon5991/pipeline-ts';
 
 const validateEmail = async (email: string) =>
   email.includes("@") ? success(email) : failure("Invalid email");
@@ -156,7 +156,7 @@ const result = await pipeline("USER@EXAMPLE.COM");
 For better performance with synchronous functions:
 
 ```typescript
-import { pipeSync, success, failure } from 'ts-pipeline';
+import { pipeSync, success, failure } from '@konkon5991/pipeline-ts';
 
 const validateAge = (age: number) =>
   age >= 18 ? success(age) : failure("Must be 18 or older");
@@ -178,7 +178,7 @@ const result = pipeline(25);
 Accumulate multiple errors instead of short-circuiting:
 
 ```typescript
-import { validateObject, valid, invalid } from 'ts-pipeline';
+import { validateObject, valid, invalid } from '@konkon5991/pipeline-ts';
 
 const validators = {
   name: (value: any) =>
@@ -211,7 +211,7 @@ const result = validateObject(validators)({
 ### Parallel Execution
 
 ```typescript
-import { parallel, success } from 'ts-pipeline';
+import { parallel, success } from '@konkon5991/pipeline-ts';
 
 const fetchUser = async () => success({ id: 1, name: "John" });
 const fetchPosts = async () => success([{ id: 1, title: "Hello" }]);
@@ -224,7 +224,7 @@ const result = await parallel(fetchUser, fetchPosts, fetchComments);
 ### Retry with Backoff
 
 ```typescript
-import { retry, success, failure } from 'ts-pipeline';
+import { retry, success, failure } from '@konkon5991/pipeline-ts';
 
 const unstableAPI = async () => {
   if (Math.random() < 0.7) {
@@ -244,7 +244,7 @@ const result = await retry(unstableAPI, {
 ### Sequential Processing
 
 ```typescript
-import { sequential, success } from 'ts-pipeline';
+import { sequential, success } from '@konkon5991/pipeline-ts';
 
 const step1 = async () => success("Step 1 complete");
 const step2 = async () => success("Step 2 complete");
@@ -259,7 +259,7 @@ const result = await sequential(step1, step2, step3);
 ### Inspection and Logging
 
 ```typescript
-import { inspect, trace, log, pipe } from 'ts-pipeline';
+import { inspect, trace, log, pipe } from '@konkon5991/pipeline-ts';
 
 const pipeline = pipe(
   inspect({ label: "Input" }),
@@ -278,7 +278,7 @@ const pipeline = pipe(
 ### Pipeline Debugging
 
 ```typescript
-import { PipelineDebugger } from 'ts-pipeline';
+import { PipelineDebugger } from '@konkon5991/pipeline-ts';
 
 const debugger = new PipelineDebugger();
 
@@ -320,7 +320,7 @@ const validateField = (value: string): Result<string, ValidationError> =>
 ### Error Recovery Patterns
 
 ```typescript
-import { recoverWith, mapError } from 'ts-pipeline';
+import { recoverWith, mapError } from '@konkon5991/pipeline-ts';
 
 const fetchWithFallback = pipe(
   primaryAPI,

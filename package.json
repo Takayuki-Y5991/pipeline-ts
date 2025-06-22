@@ -1,6 +1,6 @@
 {
-  "name": "ts-pipeline",
-  "version": "0.2.3",
+  "name": "@konkon5991/pipeline-ts",
+  "version": "0.2.5",
   "description": "A lightweight TypeScript library for Railway Oriented Programming (ROP) with comprehensive functional programming utilities.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
